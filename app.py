@@ -13,6 +13,9 @@ def load_data():
 
 # Function to save student data
 def save_data(df):
+    if os.path.exists(data_file):
+        existing_data = pd.read_csv(data_file)
+        df = pd.concat([existing_data, df], ignore_index=True)
     df.to_csv(data_file, index=False)
 
 # App Title
@@ -26,7 +29,7 @@ if mode == "Teacher":
     passcode = st.text_input("Enter Passcode", type="password")
     
     if passcode == "dee-grade-viewer":
-        uploaded_file = st.file_uploader("Upload an Excel file", type=["xls", "xlsx"])
+        uploaded_file = st.file_uploader("Upload an Excel file", type=["xls", "xlsx"], key="uploader")
         if uploaded_file is not None:
             df = pd.read_excel(uploaded_file)
             st.write("Uploaded Data:")
@@ -38,7 +41,7 @@ if mode == "Teacher":
                     df.insert(0, "Course Subject", course_subject)
                     save_data(df)
                     st.success("Data saved successfully!")
-                    st.dataframe(df)
+                    st.dataframe(load_data())
                 else:
                     st.warning("Please enter a course subject.")
             else:
